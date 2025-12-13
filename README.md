@@ -135,13 +135,34 @@ The architecture is designed for 1D seismic waveform data and can be easily cust
 
 ## Data Format
 
-The framework supports various seismic data formats through ObsPy, including:
+The framework follows ObsPy conventions for seismic data processing:
+
+### Supported Formats
+ObsPy supports various seismic data formats, including:
 - MiniSEED (.mseed)
 - SAC (Seismic Analysis Code)
 - SEG-Y
+- ASDF (Adaptable Seismic Data Format)
 - And many more
 
-Data should be organized as multi-channel time series (e.g., 3-component seismograms: Z, N, E).
+### Data Processing Workflow
+The `SeismicDataProcessor` follows the standard ObsPy preprocessing workflow:
+
+1. **Load data**: Uses ObsPy's `read()` function with automatic format detection
+2. **Detrend**: Removes linear trend and mean
+3. **Taper**: Applies cosine taper to avoid edge effects (5% by default)
+4. **Filter**: Applies bandpass filter (before resampling to avoid aliasing)
+5. **Resample**: Resamples to target sampling rate using decimation when possible
+6. **Sort components**: Automatically sorts traces by component (Z, N, E order)
+7. **Merge**: Handles gaps and overlaps using ObsPy's merge function
+
+### Component Ordering
+The framework automatically sorts seismic traces following seismology conventions:
+- **Z** (or 1): Vertical component
+- **N** (or 2): North component  
+- **E** (or 3): East component
+
+This ensures consistent data ordering regardless of how traces are stored in the file.
 
 ## Usage Examples
 

@@ -89,15 +89,47 @@ class TestSeismicDataProcessor:
         """Test that short data is padded correctly."""
         processor = SeismicDataProcessor(sampling_rate=100.0, window_length=10.0)
         
-        # Create mock stream with short data
+        # Create mock stream with ObsPy-like structure
         from unittest.mock import Mock
-        mock_trace = Mock()
-        mock_trace.data = np.random.randn(500)  # Shorter than n_samples
-        mock_stream = [mock_trace] * 3
+        from obspy import Stream, Trace
+        
+        # Create mock traces with proper stats
+        traces = []
+        for i, comp in enumerate(['Z', 'N', 'E']):
+            trace = Trace(data=np.random.randn(500))  # Shorter than n_samples
+            trace.stats.channel = f'HH{comp}'
+            trace.stats.sampling_rate = 100.0
+            traces.append(trace)
+        
+        mock_stream = Stream(traces=traces)
         
         result = processor.stream_to_array(mock_stream, n_components=3)
         
         assert result.shape == (3, 1000)  # Should be padded to full length
+    
+    def test_sort_stream_by_component(self):
+        """Test that stream is sorted correctly by component (Z, N, E)."""
+        from obspy import Stream, Trace
+        
+        processor = SeismicDataProcessor()
+        
+        # Create stream with traces in wrong order (E, Z, N)
+        traces = []
+        for comp in ['E', 'Z', 'N']:
+            trace = Trace(data=np.random.randn(1000))
+            trace.stats.channel = f'HH{comp}'
+            trace.stats.sampling_rate = 100.0
+            traces.append(trace)
+        
+        stream = Stream(traces=traces)
+        
+        # Sort the stream
+        sorted_stream = processor._sort_stream_by_component(stream)
+        
+        # Check that order is now Z, N, E
+        assert sorted_stream[0].stats.channel == 'HHZ'
+        assert sorted_stream[1].stats.channel == 'HHN'
+        assert sorted_stream[2].stats.channel == 'HHE'
 
 
 class TestSeismicDataset:
