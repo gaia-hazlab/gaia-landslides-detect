@@ -1,0 +1,15 @@
+name: gaia-hazlab
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - obspy>=1.4
+  - numpy>=1.26
+  - pandas>=2.1
+  - matplotlib>=3.8
+  - plotly>=5.20
+  - scikit-learn>=1.4
+  - pip
+  - pip:
+      - git+https://github.com/QuakeWorks/QuakeScope.git
+      - git+https://github.com/earthobservations/Surface_Event_Detection.git

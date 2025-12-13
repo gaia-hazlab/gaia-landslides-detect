@@ -106,3 +106,46 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+# Virtual environments
+.env
+.venv
+.envrc
+venv/
+
+# Conda environment artifacts
+*.conda
+*.yml.lock
+*.yaml.lock
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+notebooks/*-checkpoint.ipynb
+notebooks/*-checkpoint.json
+
+# Notebook outputs
+notebooks/*outputs*
+notebooks/*-output*
+notebooks/*-out.ipynb
+
+# Data directories
+/data/*
+data/*
+!/data/raw/
+!/data/raw/**
+!/data/processed/
+!/data/processed/**
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Plotly and matplotlib cache
+*.json
+*.png
+*.svg
+*.pdf
+
+# VSCode
+.vscode/
