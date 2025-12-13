@@ -1,33 +1,38 @@
 # Gaia Landslides Detection
 
-A PyTorch-based framework for deploying deep learning models for seismic data analysis and landslide detection.
+A PyTorch-based framework for deploying deep learning models for seismic data analysis and landslide detection, with integrated SeisBench workflow for event detection.
 
 ## Features
 
 - 🔥 PyTorch-based neural network models for seismic data classification
-- 🌊 Integration with ObsPy for seismic data processing
-- 📊 SeisBench compatibility for earthquake detection benchmarks
-- 📈 Visualization tools for seismograms and spectrograms
+- 🌊 Integration with ObsPy for seismic data processing following seismology conventions
+- 📊 **SeisBench workflow for automated event detection** (PhaseNet, EQTransformer, GPD)
+- 🎯 **QuakeScope model support** with pre-trained weights
+- 📈 **Interactive visualization tools** for detection quality control
 - 🚀 Ready-to-use template for model deployment
-- 📓 Jupyter notebook examples for interactive analysis
+- 📓 Jupyter notebook examples for complete workflows
 
 ## Repository Structure
 
 ```
 gaia-landslides-detect/
-├── src/                    # Source code
-│   ├── __init__.py        # Package initialization
-│   ├── models.py          # PyTorch model definitions
-│   ├── data.py            # Data processing utilities
-│   └── utils.py           # Visualization and helper functions
-├── notebooks/             # Jupyter notebooks
-│   └── example_analysis.ipynb  # Example analysis workflow
-├── plots/                 # Generated plots and visualizations
-├── data/                  # Seismic data files
-├── requirements.txt       # Python dependencies
-├── setup.py              # Package setup file
-├── pyproject.toml        # Project configuration
-└── README.md             # This file
+├── src/                           # Source code
+│   ├── __init__.py               # Package initialization
+│   ├── models.py                 # PyTorch model definitions
+│   ├── data.py                   # ObsPy-compliant data processing
+│   ├── utils.py                  # Visualization and helper functions
+│   ├── detect.py                 # Event detection utilities
+│   ├── seisbench_models.py       # SeisBench model integration
+│   └── interactive_plots.py      # Interactive QC visualization
+├── notebooks/                     # Jupyter notebooks
+│   ├── example_analysis.ipynb    # Basic analysis workflow
+│   └── seisbench_detection.ipynb # SeisBench detection workflow
+├── plots/                         # Generated plots and visualizations
+├── data/                          # Seismic data files
+├── requirements.txt               # Python dependencies
+├── setup.py                       # Package setup file
+├── pyproject.toml                 # Project configuration
+└── README.md                      # This file
 ```
 
 ## Installation
@@ -60,7 +65,45 @@ pip install -e .
 
 ## Quick Start
 
-### Using the Python API
+### SeisBench Detection Workflow (Recommended)
+
+The fastest way to get started with seismic event detection:
+
+```python
+from obspy.clients.fdsn import Client
+from obspy import UTCDateTime
+from src.seisbench_models import create_detector
+from src.detect import multi_class_detection
+from src.interactive_plots import plot_detection_results
+
+# 1. Load pre-trained SeisBench model
+detector = create_detector(
+    model_name='phasenet',  # or 'eqtransformer', 'gpd'
+    device='auto'
+)
+
+# 2. Download seismic data
+client = Client("IRIS")
+stream = client.get_waveforms(
+    network="UW", station="RATT", channel="HH*", location="*",
+    starttime=UTCDateTime() - 3600,
+    endtime=UTCDateTime()
+)
+
+# 3. Run detection
+annotated_stream = detector.annotate(stream)
+probabilities = detector._extract_predictions(annotated_stream)
+
+# 4. Detect events
+events = multi_class_detection(probabilities, threshold=0.5)
+
+# 5. Visualize results
+fig, axes = plot_detection_results(stream, probabilities, events)
+```
+
+See `notebooks/seisbench_detection.ipynb` for the complete interactive workflow.
+
+### Custom Model Training
 
 ```python
 import torch
@@ -97,19 +140,28 @@ with torch.no_grad():
 print(f"Predictions: {probabilities}")
 ```
 
-### Using the Jupyter Notebook
+### Using the Jupyter Notebooks
 
+#### SeisBench Detection (Recommended)
 1. Start Jupyter:
 ```bash
 jupyter notebook
 ```
 
-2. Open `notebooks/example_analysis.ipynb`
+2. Open `notebooks/seisbench_detection.ipynb`
 
-3. Run the cells to see examples of:
+3. Follow the workflow:
+   - Load SeisBench models (PhaseNet, EQTransformer, or custom QuakeScope models)
+   - Download data from IRIS/FDSN
+   - Run automated detection
+   - Interactive QC visualization
+   - Export results to CSV
+
+#### Basic Analysis
+Open `notebooks/example_analysis.ipynb` for:
    - Creating synthetic seismograms
    - Visualizing seismic data
-   - Training and evaluating models
+   - Training custom models
    - Saving and loading checkpoints
 
 ## Dependencies
@@ -117,12 +169,40 @@ jupyter notebook
 Core dependencies:
 - **PyTorch** (>=2.0.0): Deep learning framework
 - **ObsPy** (>=1.4.0): Seismic data processing
-- **SeisBench** (>=0.4.0): Seismic benchmark datasets
+- **SeisBench** (>=0.4.0): Pre-trained seismic models and benchmarks
 - **Matplotlib** (>=3.7.0): Visualization
 - **NumPy** (>=1.24.0): Numerical computing
 - **SciPy** (>=1.10.0): Scientific computing
+- **Pandas** (>=2.0.0): Data analysis and export
 
 See `requirements.txt` for the complete list.
+
+## SeisBench Workflow
+
+This repository implements the SeisBench detection workflow for automated seismic event detection:
+
+### Supported Models
+- **PhaseNet**: P and S wave detection
+- **EQTransformer**: Earthquake detection and phase picking
+- **GPD**: General purpose detector
+- **QuakeScope Models**: Regional models with custom weights
+
+### Detection Pipeline
+1. **Model Loading**: Load pre-trained SeisBench models or custom QuakeScope weights
+2. **Data Acquisition**: Download data from FDSN services (IRIS, NCEDC, etc.)
+3. **Inference**: Run `model.annotate()` to get probability predictions
+4. **Event Detection**: Apply smoothing and threshold-based detection
+5. **Quality Control**: Interactive visualization with toggleable event classes
+6. **Export**: Save results to CSV with event metrics (AUC, probabilities, timing)
+
+### Event Detection Features
+- **Multi-class detection**: Distinguish between earthquakes, explosions, and surface events
+- **Event metrics**: Area under curve, max/mean probabilities, duration
+- **Smart merging**: Merge nearby events with configurable distance
+- **Non-maximum suppression**: Remove overlapping detections
+- **Interactive QC**: Toggle event classes, zoom, and inspect waveforms
+
+See `notebooks/seisbench_detection.ipynb` for the complete workflow implementation.
 
 ## Model Architecture
 
