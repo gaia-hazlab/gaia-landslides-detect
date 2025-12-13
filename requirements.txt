@@ -1,0 +1,24 @@
+# Core dependencies for PyTorch seismic data analysis
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Seismic data processing
+seisbench>=0.4.0
+obspy>=1.4.0
+
+# Data analysis and visualization
+numpy>=1.24.0
+matplotlib>=3.7.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Jupyter notebooks
+jupyter>=1.0.0
+ipykernel>=6.0.0
+notebook>=6.5.0
+
+# Utilities
+tqdm>=4.65.0
+pyyaml>=6.0
+h5py>=3.8.0
