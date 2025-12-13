@@ -1,0 +1,36 @@
+# Configuration file for seismic data processing and model training
+# Use YAML format for easy configuration management
+
+# Data configuration
+data:
+  sampling_rate: 100.0        # Sampling rate in Hz
+  window_length: 30.0         # Window length in seconds
+  normalize: true             # Whether to normalize data
+  freqmin: 1.0               # Minimum frequency for bandpass filter (Hz)
+  freqmax: 20.0              # Maximum frequency for bandpass filter (Hz)
+  
+# Model configuration
+model:
+  name: "SeismicCNN"
+  input_channels: 3           # Number of input channels (Z, N, E)
+  num_classes: 2              # Number of output classes
+  dropout: 0.5                # Dropout rate
+
+# Training configuration
+training:
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: "Adam"
+  scheduler: "ReduceLROnPlateau"
+  early_stopping_patience: 10
+  
+# Paths
+paths:
+  data_dir: "./data"
+  checkpoint_dir: "./checkpoints"
+  plot_dir: "./plots"
+  
+# Other settings
+seed: 42                      # Random seed for reproducibility
+device: "auto"                # "auto", "cpu", or "cuda"
