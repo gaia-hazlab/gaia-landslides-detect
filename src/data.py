@@ -96,18 +96,27 @@ class SeismicDataProcessor:
                      corners=corners, zerophase=True)
         
         # Resample to target sampling rate if needed
-        # Check each trace's sampling rate
+        # Check if any trace needs resampling
+        needs_resampling = False
         for trace in stream:
             if abs(trace.stats.sampling_rate - self.sampling_rate) > 0.01:
-                # Use decimate if downsampling and factor is integer
-                factor = trace.stats.sampling_rate / self.sampling_rate
+                needs_resampling = True
+                break
+        
+        if needs_resampling:
+            # Check if we can use decimation (all traces have same sampling rate)
+            sampling_rates = [tr.stats.sampling_rate for tr in stream]
+            if len(set(sampling_rates)) == 1:  # All traces have same sampling rate
+                factor = sampling_rates[0] / self.sampling_rate
                 if factor > 1 and abs(factor - round(factor)) < 0.01:
-                    # Decimation factor should be integer
+                    # Use decimation for integer factors
                     stream.decimate(int(round(factor)), no_filter=True)
                 else:
                     # Use resample for non-integer factors or upsampling
                     stream.resample(self.sampling_rate)
-                break
+            else:
+                # Different sampling rates, resample each trace individually
+                stream.resample(self.sampling_rate)
         
         return stream
     
