@@ -11,7 +11,6 @@ from matplotlib.widgets import Slider, Button, CheckButtons
 from scipy import signal
 from obspy import Stream, UTCDateTime
 from typing import Dict, List, Optional, Tuple
-import warnings
 
 
 def plot_detection_results(

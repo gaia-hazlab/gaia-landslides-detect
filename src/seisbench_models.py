@@ -158,7 +158,8 @@ class QuakeScopeDetector(SeismicDetector):
     Detector using QuakeScope pre-trained models.
     
     QuakeScope provides models trained on specific regional datasets.
-    This class handles downloading and loading weights from QuakeScope.
+    This class handles loading pre-downloaded weights from QuakeScope.
+    Use download_quakescope_model() to download weights first.
     
     Args:
         model_type (str): Model type ('quakexnet', 'phasenet', etc.)

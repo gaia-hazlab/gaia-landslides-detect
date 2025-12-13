@@ -9,7 +9,6 @@ import numpy as np
 import torch
 from scipy import signal
 from typing import Dict, List, Tuple, Optional
-import warnings
 
 
 def smooth_moving_avg(data: np.ndarray, window_size: int = 100) -> np.ndarray:
@@ -74,18 +73,18 @@ def detect_event_windows(
     # Merge nearby events
     if len(starts) > 1:
         merged_starts = [starts[0]]
-        merged_ends = []
+        merged_ends = [ends[0]]
         
         for i in range(1, len(starts)):
-            if starts[i] - merged_starts[-1] <= merge_distance:
-                # Merge with previous event
-                merged_starts[-1] = min(merged_starts[-1], starts[i])
+            # Check gap between end of previous event and start of current event
+            if starts[i] - merged_ends[-1] <= merge_distance:
+                # Merge with previous event by extending its end time
+                merged_ends[-1] = max(merged_ends[-1], ends[i])
             else:
                 # Start new event
-                merged_ends.append(ends[i-1])
                 merged_starts.append(starts[i])
+                merged_ends.append(ends[i])
         
-        merged_ends.append(ends[-1])
         starts = np.array(merged_starts)
         ends = np.array(merged_ends)
     
