@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader, random_split
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).parent / 'src'))
+sys.path.insert(0, str(Path(__file__).parent))
 
 from src.models import SeismicCNN, save_model
 from src.data import SeismicDataset, SeismicDataProcessor

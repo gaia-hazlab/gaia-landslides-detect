@@ -5,7 +5,6 @@ Data processing utilities for seismic data using ObsPy and SeisBench.
 import numpy as np
 import torch
 from obspy import read, Stream
-from obspy.signal.filter import bandpass
 import warnings
 
 
