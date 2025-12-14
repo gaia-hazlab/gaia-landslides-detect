@@ -11,5 +11,5 @@ dependencies:
   - scikit-learn>=1.4
   - pip
   - pip:
-      - git+https://github.com/QuakeWorks/QuakeScope.git
-      - git+https://github.com/earthobservations/Surface_Event_Detection.git
+      - git+https://github.com/seisSCOPED/quakeScope.git
+      - git+https://github.com/Akashkharita/PNW_Seismic_Event_Classification.git
